@@ -30,4 +30,6 @@ dependencies {
     compile "com.sparkjava:spark-core:2.9.3"
     
     compile group: 'org.json', name: 'json', version: '20201115'
+    
+    compile 'org.mongodb:mongo-java-driver:3.12.7'
 }

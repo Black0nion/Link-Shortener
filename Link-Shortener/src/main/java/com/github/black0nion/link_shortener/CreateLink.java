@@ -1,13 +1,8 @@
 package com.github.black0nion.link_shortener;
 
-import static spark.Spark.get;
 import static spark.Spark.post;
 
-import java.nio.charset.StandardCharsets;
-
 import org.json.JSONObject;
-
-import com.google.common.io.Files;
 
 public class CreateLink {
 	
@@ -39,30 +34,10 @@ public class CreateLink {
 				return "";
 			}
 			
-			createLink(url, redirectUrl, password);
+			MongoWrapper.createLink(url, redirectUrl, password);
 			
 			response.status(200);
 			return new JSONObject().put("password", password);
-		});
-	}
-	
-	public static void createLink(String url, String redirectUrl, String password) {
-		LinkShortener.urls.put(url, redirectUrl);
-		LinkShortener.passwords.put(url, password);
-		
-		try {
-			LinkShortener.urlsJSON.put(url, redirectUrl);
-			LinkShortener.passwordsJSON.put(url, password);
-			Files.asCharSink(LinkShortener.urlsFile, StandardCharsets.UTF_8).write(LinkShortener.urlsJSON.toString(1));
-			Files.asCharSink(LinkShortener.passwordsFile, StandardCharsets.UTF_8).write(LinkShortener.passwordsJSON.toString(1));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		get(url, (req, res) -> {
-			res.redirect(redirectUrl);
-			System.out.println("Redirected a user (IP " + req.ip() + ")! " + req.url() + " -> " + redirectUrl);
-			return null;
 		});
 	}
 }

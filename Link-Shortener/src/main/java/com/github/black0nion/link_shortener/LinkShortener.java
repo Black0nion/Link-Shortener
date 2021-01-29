@@ -86,7 +86,7 @@ private static int PORT = 1010;
 	
 	public static void setup() {
 		reload();
-			
+		
 		Spark.port(PORT);
 		
 		Spark.internalServerError((request, response) -> {
@@ -128,7 +128,7 @@ private static int PORT = 1010;
 					System.out.println("No arg given!");
 				} else {
 					String url = line.split(" ")[1];
-					DeleteLink.deleteLink(url);
+					MongoWrapper.deleteLink(url);
 				}
 			}
 		}
