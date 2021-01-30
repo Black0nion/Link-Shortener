@@ -24,15 +24,15 @@ public class CreateLink {
 				} while (LinkShortener.urls.containsKey(randomUrl));
 				url = randomUrl;
 			}
+
+			if (MongoWrapper.linkExisting(url)) {
+				response.status(409);
+				return "409 CONFLICT";
+			}
 			
 			String password = (request.headers("password") != null ? request.headers("password") : LinkShortener.getRandomString(20));
 			
 			System.out.println("New URL made by IP " + request.ip() + " with password " + password + ": " + url + " -> " + redirectUrl);
-			
-			if (LinkShortener.urls.containsKey(url)) {
-				response.status(409);
-				return "";
-			}
 			
 			MongoWrapper.createLink(url, redirectUrl, password);
 			
