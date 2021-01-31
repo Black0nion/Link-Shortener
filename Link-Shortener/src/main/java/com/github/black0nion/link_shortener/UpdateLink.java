@@ -25,15 +25,14 @@ public class UpdateLink {
 				return "";
 			}
 			
-			String redirectURL = LinkShortener.urls.get(url);
-			
-			get(newUrl, (req, res) -> {
-				res.redirect(redirectURL);
-				System.out.println("Redirected a user (IP " + req.ip() + ")! " + req.url() + " -> " + redirectURL);
+			get(url, (req, res) -> {
+				res.redirect(newUrl);
+				System.out.println("Redirected a user (IP " + req.ip() + ")! " + req.url() + " -> " + newUrl);
 				return null;
 			});
-			
-			MongoWrapper.editLink(url, newUrl, redirectURL, password);
+
+			System.out.println("Edited Link " + url + " from " + LinkShortener.urls.get(url) + " to " + newUrl + " by IP " + (request.headers("X-Real-IP") != null ? request.headers("X-Real_IP") : request.ip()));
+			MongoWrapper.editLink(url, newUrl, password);
 			
 			return "";
 		});

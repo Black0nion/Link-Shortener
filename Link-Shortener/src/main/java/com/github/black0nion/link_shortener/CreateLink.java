@@ -32,7 +32,7 @@ public class CreateLink {
 			
 			String password = (request.headers("password") != null ? request.headers("password") : LinkShortener.getRandomString(20));
 			
-			System.out.println("New URL made by IP " + request.ip() + " with password " + password + ": " + url + " -> " + redirectUrl);
+			System.out.println("Created Link " + url + " redirecting to " + redirectUrl + " with password " + password + " by IP " + (request.headers("X-Real-IP") != null ? request.headers("X-Real_IP") : request.ip()));
 			
 			MongoWrapper.createLink(url, redirectUrl, password);
 			

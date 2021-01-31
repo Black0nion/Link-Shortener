@@ -25,6 +25,8 @@ public class DeleteLink {
 				return "";
 			}
 			
+			System.out.println("Deleted Link " + url + " redirecting to " + LinkShortener.urls.get(url) + " by IP " + (request.headers("X-Real-IP") != null ? request.headers("X-Real_IP") : request.ip()));
+			
 			MongoWrapper.deleteLink(url);
 			
 			return "";

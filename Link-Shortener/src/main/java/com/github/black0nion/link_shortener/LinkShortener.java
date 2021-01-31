@@ -23,7 +23,11 @@ private static int PORT = 1010;
 	}
 	
 	public static void setup() {
-		MongoManager.connect(MongoDB.mongoIP, MongoDB.port, MongoDB.mongoAuthDB, MongoDB.mongoUsername, MongoDB.mongoPassword);
+		if (!MongoManager.connect(MongoDB.mongoIP, MongoDB.port, MongoDB.mongoAuthDB, MongoDB.mongoUsername, MongoDB.mongoPassword)) {
+			System.err.println("Couldn't connect to MongoDB!");
+			System.exit(-1);
+		}
+			
 		MongoWrapper.init();
 		reload();
 		

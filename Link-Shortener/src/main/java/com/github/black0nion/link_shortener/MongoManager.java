@@ -9,6 +9,7 @@ import org.bson.Document;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -26,10 +27,18 @@ public class MongoManager {
 	public static void connect(String ip, String db, String userName, String password) {
 		connect(ip, "27017", db, userName, password);
 	}
-	
-	public static void connect(String ip, String port, String db, String userName, String password) {
+
+	@SuppressWarnings("deprecation")
+	public static boolean connect(String ip, String port, String db, String userName, String password) {
 		String connectionURI = "mongodb://" + userName + ":" + password + "@" + ip + ":" + port + (db != null ? "/" + db : "");
+		MongoClientOptions.builder().sslEnabled(true).build();
 		client = new MongoClient(new MongoClientURI(connectionURI));
+		try {
+			client.isLocked();
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 	
 	public static void disconnect() {
