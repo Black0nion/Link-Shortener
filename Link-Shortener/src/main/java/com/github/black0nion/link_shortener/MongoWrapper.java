@@ -3,6 +3,8 @@ package com.github.black0nion.link_shortener;
 import static spark.Spark.get;
 import static spark.Spark.unmap;
 
+import java.util.HashMap;
+
 import org.bson.Document;
 
 import com.mongodb.BasicDBObject;
@@ -14,6 +16,27 @@ public class MongoWrapper {
 	
 	public static void init() {
 		collection = MongoManager.getCollection(MongoDB.mongoDBCollectionName, MongoManager.getDatabase(MongoDB.mongoDBName));
+		
+		if (collection.estimatedDocumentCount() == 0)
+			return; 
+		
+		HashMap<String, String> tempUrls = new HashMap<>();
+		HashMap<String, String> tempPasswords = new HashMap<>();
+		
+		for (Document doc : collection.find()) {
+			if (doc.containsKey("url") && doc.containsKey("redirect_url") && doc.containsKey("password")) {
+				tempUrls.put(doc.getString("url"), doc.getString("redirect_url"));
+				tempPasswords.put(doc.getString("url"), doc.getString("password"));
+			}
+		}
+		
+		if (tempUrls.size() == 0 || tempPasswords.size() == 0)
+			return;
+		
+		LinkShortener.urls.putAll(tempUrls);
+		LinkShortener.passwords.putAll(tempPasswords);
+		tempUrls = null;
+		tempPasswords = null;
 	}
 	
 	public static boolean linkExisting(String url) {

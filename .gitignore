@@ -51,3 +51,5 @@ gradle-app.setting
 .metadata
 
 files
+Link-Shortener/mongo.properties
+Link-Shortener/config.properties

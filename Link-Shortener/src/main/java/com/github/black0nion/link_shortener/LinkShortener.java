@@ -1,15 +1,50 @@
 package com.github.black0nion.link_shortener;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Random;
 import java.util.Scanner;
 
 import spark.Spark;
 
 public class LinkShortener {
+	
+	private static Properties properties;
+	
+	static {
+		try {
+			properties = new Properties();
+			BufferedInputStream stream = new BufferedInputStream(new FileInputStream("config.properties"));
+			properties.load(stream);
+			stream.close();
+			
+			if (!(properties.containsKey("port"))) {
+				System.out.println("config.properties File not correctly filled!");
+				System.exit(0);
+			}
+		} catch (Exception e) {
+			if (e instanceof FileNotFoundException)
+				System.out.println("File config.properties not found! Please refer to the GitHub Repo README for more information!");
+			else  {
+				e.printStackTrace();
+				System.out.println("An error occured while reading the Config, terminating!");
+			}
+			System.exit(-1);
+		}
+		
+		try {
+			
+		} catch (Exception e) {
+			System.err.println("Server Port is not an int!");
+			System.exit(-1);
+		}
+	}
 
-private static int PORT = 1010;
+	private static int PORT = Integer.parseInt(properties.getProperty("port"));
 	
 	public static HashMap<String, String> urls;
 	
@@ -23,7 +58,16 @@ private static int PORT = 1010;
 	}
 	
 	public static void setup() {
-		if (!MongoManager.connect(MongoDB.mongoIP, MongoDB.port, MongoDB.mongoAuthDB, MongoDB.mongoUsername, MongoDB.mongoPassword)) {
+		reload();
+		int timeout = 30000;
+		try {
+			timeout = Integer.parseInt(MongoDB.mongoTimeout);
+		} catch (Exception e) {
+			System.err.println("Timeout is not an int!");
+			System.exit(-1);
+		}
+		
+		if (!MongoManager.connect(MongoDB.mongoIP, MongoDB.mongoPort, MongoDB.mongoAuthDB, MongoDB.mongoUsername, MongoDB.mongoPassword, timeout)) {
 			System.err.println("Couldn't connect to MongoDB!");
 			System.exit(-1);
 		}
