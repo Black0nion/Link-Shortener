@@ -9,6 +9,9 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Scanner;
 
+import spark.Filter;
+import spark.Request;
+import spark.Response;
 import spark.Spark;
 
 public class LinkShortener {
@@ -98,6 +101,16 @@ public class LinkShortener {
 		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
 		
+		Spark.before(new Filter() {
+			@Override
+			public void handle(Request request, Response response) {
+				response.header("Access-Control-Allow-Origin", "*");
+				response.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
+				response.header("Access-Control-Allow-Headers", "Origin, Content-Type, X-Auth-Token");
+				System.out.println("New Request from IP " + (request.headers("X-Real-IP") != null ? request.headers("X-Real-IP") : request.ip()) + " to URL " + request.pathInfo());
+			}
+		});
+		
 		while (true) {
 			sc.hasNext();
 			String line = sc.nextLine();
@@ -121,8 +134,6 @@ public class LinkShortener {
 			}
 		}
 	}
-	
-
 	
 	public static String getRandomString() {
 		int leftLimit = 97; // letter 'a'
@@ -158,5 +169,4 @@ public class LinkShortener {
 
 	    return generatedString;
 	}
-
 }

@@ -36,6 +36,8 @@ public class CreateLink {
 			
 			MongoWrapper.createLink(url, redirectUrl, password);
 			
+			response.header("Crossorigin", "anonymous");
+			response.header("Access-Control-Allow-Origin", "*");
 			response.status(200);
 			return new JSONObject().put("password", password);
 		});

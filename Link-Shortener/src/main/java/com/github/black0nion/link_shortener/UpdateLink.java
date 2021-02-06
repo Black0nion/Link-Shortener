@@ -1,6 +1,5 @@
 package com.github.black0nion.link_shortener;
 
-import static spark.Spark.get;
 import static spark.Spark.patch;
 
 public class UpdateLink {
@@ -25,13 +24,7 @@ public class UpdateLink {
 				return "";
 			}
 			
-			get(url, (req, res) -> {
-				res.redirect(newUrl);
-				System.out.println("Redirected a user (IP " + req.ip() + ")! " + req.url() + " -> " + newUrl);
-				return null;
-			});
-
-			System.out.println("Edited Link " + url + " from " + LinkShortener.urls.get(url) + " to " + newUrl + " by IP " + (request.headers("X-Real-IP") != null ? request.headers("X-Real_IP") : request.ip()));
+			System.out.println("Edited Link " + url + " from " + LinkShortener.urls.get(url) + " to " + newUrl + " by IP " + (request.headers("X-Real-IP") != null ? request.headers("X-Real-IP") : request.ip()));
 			MongoWrapper.editLink(url, newUrl, password);
 			
 			return "";

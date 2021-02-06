@@ -40,7 +40,7 @@ public class MongoWrapper {
 	}
 	
 	public static boolean linkExisting(String url) {
-		return MongoManager.getDocumentInCollection(collection, "url", url) != null;
+		return LinkShortener.urls.containsKey(url);
 	}
 	
 	public static void createLink(String url, String redirectURL, String password) {
@@ -51,6 +51,8 @@ public class MongoWrapper {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		System.out.println(url);
 		get(url, (req, res) -> {
 			res.redirect(redirectURL);
 			System.out.println("Redirected a user (IP " + (req.headers("X-Real-IP") != null ? req.headers("X-Real-IP") : req.ip()) + ")! " + req.url() + " -> " + redirectURL);
@@ -69,6 +71,12 @@ public class MongoWrapper {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		get(url, (req, res) -> {
+			res.redirect(newUrl);
+			System.out.println("Redirected a user (IP " + req.ip() + ")! " + req.url() + " -> " + newUrl);
+			return null;
+		});
 	}
 	
 	public static void deleteLink(String url) {
