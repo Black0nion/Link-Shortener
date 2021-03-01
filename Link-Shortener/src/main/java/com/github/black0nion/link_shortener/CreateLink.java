@@ -10,11 +10,11 @@ public class CreateLink {
 		
 		post("/getlink", (request, response) -> {
 			String url = request.headers("url");
-			final String redirectUrl = request.headers("redirect_url");
+			final String redirectUrl = request.headers("redirecturl");
 			
 			if (redirectUrl == null) {
 				response.status(400);
-				return "";
+				return "400 BAD REQUEST";
 			}
 			
 			if (url == null) {
@@ -32,7 +32,7 @@ public class CreateLink {
 			
 			String password = (request.headers("password") != null ? request.headers("password") : LinkShortener.getRandomString(20));
 			
-			System.out.println("Created Link " + url + " redirecting to " + redirectUrl + " with password " + password + " by IP " + (request.headers("X-Real-IP") != null ? request.headers("X-Real_IP") : request.ip()));
+			System.out.println("Created Link " + url + " redirecting to " + redirectUrl + " with password " + password + " by IP " + (request.headers("X-Real-IP") != null ? request.headers("X-Real-IP") : request.ip()));
 			
 			MongoWrapper.createLink(url, redirectUrl, password);
 			

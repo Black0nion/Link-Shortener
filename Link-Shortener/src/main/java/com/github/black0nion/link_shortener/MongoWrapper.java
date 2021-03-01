@@ -24,8 +24,8 @@ public class MongoWrapper {
 		HashMap<String, String> tempPasswords = new HashMap<>();
 		
 		for (Document doc : collection.find()) {
-			if (doc.containsKey("url") && doc.containsKey("redirect_url") && doc.containsKey("password")) {
-				tempUrls.put(doc.getString("url"), doc.getString("redirect_url"));
+			if (doc.containsKey("url") && doc.containsKey("redirecturl") && doc.containsKey("password")) {
+				tempUrls.put(doc.getString("url"), doc.getString("redirecturl"));
 				tempPasswords.put(doc.getString("url"), doc.getString("password"));
 			}
 		}
@@ -45,14 +45,13 @@ public class MongoWrapper {
 	
 	public static void createLink(String url, String redirectURL, String password) {
 		try {
-			MongoManager.insertOne(collection, new Document().append("url", url).append("redirect_url", redirectURL).append("password", password));
+			MongoManager.insertOne(collection, new Document().append("url", url).append("redirecturl", redirectURL).append("password", password));
 			LinkShortener.urls.put(url, redirectURL);
 			LinkShortener.passwords.put(url, password);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		System.out.println(url);
 		get(url, (req, res) -> {
 			res.redirect(redirectURL);
 			System.out.println("Redirected a user (IP " + (req.headers("X-Real-IP") != null ? req.headers("X-Real-IP") : req.ip()) + ")! " + req.url() + " -> " + redirectURL);
@@ -67,7 +66,7 @@ public class MongoWrapper {
 			LinkShortener.urls.put(url, newUrl);
 			LinkShortener.passwords.remove(url);
 			LinkShortener.passwords.put(url, password);
-			MongoManager.updateOne(collection, new BasicDBObject("url", url), new BasicDBObject("redirect_url", newUrl));
+			MongoManager.updateOne(collection, new BasicDBObject("url", url), new BasicDBObject("redirecturl", newUrl));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

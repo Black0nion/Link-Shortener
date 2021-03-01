@@ -38,13 +38,6 @@ public class LinkShortener {
 			}
 			System.exit(-1);
 		}
-		
-		try {
-			
-		} catch (Exception e) {
-			System.err.println("Server Port is not an int!");
-			System.exit(-1);
-		}
 	}
 
 	private static int PORT = Integer.parseInt(properties.getProperty("port"));
@@ -58,10 +51,10 @@ public class LinkShortener {
 	private static void reload() {
 		urls = new HashMap<>();
 		passwords = new HashMap<>();
+		MongoWrapper.init();
 	}
 	
 	public static void setup() {
-		reload();
 		int timeout = 30000;
 		try {
 			timeout = Integer.parseInt(MongoDB.mongoTimeout);
@@ -75,7 +68,6 @@ public class LinkShortener {
 			System.exit(-1);
 		}
 			
-		MongoWrapper.init();
 		reload();
 		
 		Spark.port(PORT);
@@ -90,8 +82,8 @@ public class LinkShortener {
 			return "";
 		});
 	}
-	
-	public static void main(String[] args) {
+
+	public static void main(String[] launchArgs) {
 		setup();
 		
 		CreateLink.init();
@@ -114,22 +106,27 @@ public class LinkShortener {
 		while (true) {
 			sc.hasNext();
 			String line = sc.nextLine();
+			final String[] args = line.split(" ");
 			if (line.equalsIgnoreCase("reload") || line.equalsIgnoreCase("rl") || line.equalsIgnoreCase("r")) {
 				reload();
 				System.out.println("Reloaded.");
 			} else if (line.equalsIgnoreCase("list") || line.equalsIgnoreCase("l")) {
+				System.out.println("All links:");
 				for (Map.Entry<String, String> entry : urls.entrySet()) {
 					if (passwords.containsKey(entry.getKey()))
 						System.out.println(entry.getKey() + " -> " + entry.getValue() + " | " + passwords.get(entry.getKey()));
 					else
 						System.out.println("NO PASSWORD FOUND: " + entry.getValue());
 				}
-			} else if (line.split(" ")[0].equalsIgnoreCase("del") || line.split(" ")[0].equalsIgnoreCase("delete")) {
-				if (line.split(" ").length < 2) {
-					System.out.println("No arg given!");
-				} else {
-					String url = line.split(" ")[1];
-					MongoWrapper.deleteLink(url);
+			} else {
+				if (args[0].equalsIgnoreCase("del") || args[0].equalsIgnoreCase("delete")) {
+					if (args.length < 2) {
+						System.out.println("No arg given!");
+					} else {
+						String url = args[1];
+						MongoWrapper.deleteLink(url);
+						System.out.println("Deleted Link " + args[1]);
+					}
 				}
 			}
 		}
